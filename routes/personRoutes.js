@@ -11,7 +11,7 @@ router.post('/', async(req,res)=>{
         const newPerson = new person(data);
 
         //save new person to databse 
-        const response = await newPerson.save();
+        const response = await person.insertMany(data);
         console.log('data saved');
         res.status(200).json(response);
 
