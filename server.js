@@ -45,48 +45,42 @@
 // const jsonString = '{"name": "john" , "age": 24 , "city" : "Mumbai"}';
 // const jsonObject = JSON.parse(jasonString);
 // console.log(jsonObject);
-
+require('dotenv').config();
 const express = require('express')
 const app = express();
 const db = require('./db');
-const person = require('./models/person')
-require('dotenv').config();
+const passport = require('./auth');
+
+
+
 
 const bodyParser = require('body-parser');
 const MenuItem = require('./models/MenuItem');
 app.use(bodyParser.json());
 
-const  PORT = process.env.PORT || 3000;
+const  PORT = process.env.PORT || 3001;
 
-app.get('/',function(req,res){
+//Middleware function 
+const logRequest = (req , res , next) => {
+console.log(`[${new Date().toLocaleString()}] request made to : ${req.originalUrl}`);
+next(); // move to next phase
+
+} 
+app.use(logRequest);
+
+app.use(passport.initialize());
+const localAuthMiddleware = passport.authenticate('local' , {session : false});
+
+
+app.get('/', function(req,res){
     res.send('Welcome to my hotel ... How can i help you ??')
 })
-
-// app.get('/chicken' ,(req, res) => {
-//     res.send('Sure sir your order will be right back')
-// })
-
-// app.get('/idli' ,(req,res)=>{
-//     var customized_idli = {
-//         name: 'rava idli',
-//         size: '10cm',
-//         is_sambar: true,
-//         is_chutney: false
-//     }
-//     res.send(customized_idli)
-//     // res.send('Your idli will be right back')
-// })
-
-
-
-
-
 
 
 const personRoutes = require('./routes/personRoutes');
 const menuItemRoutes = require('./routes/menuItemRoutes');
 
-app.use('/person' , personRoutes);
+app.use('/person' , localAuthMiddleware,  personRoutes);
 app.use('/menu' , menuItemRoutes);
 
 

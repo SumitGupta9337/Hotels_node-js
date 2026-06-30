@@ -8,10 +8,10 @@ router.post('/', async(req,res)=>{
         const data = req.body  //Assuming the request body contains the person data
 
         //create a new person document using mongoose model
-        const newPerson = new person(data);
+        // const newPerson = new person(data);
 
         //save new person to databse 
-        const response = await person.insertMany(data);
+        const response = await person.create(data);
         console.log('data saved');
         res.status(200).json(response);
 
