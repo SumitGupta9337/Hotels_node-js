@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const user = require('./../models/User');
 const {jwtAuthMiddleware , generateToken} = require('../middlewares/jwt')
+const checkRole = require('../middlewares/authRole')
 
 
 
@@ -30,12 +31,12 @@ router.post('/register' , async (req , res)=>{
         
         const token = generateToken(payload);
 
-        const userWithoutpassword = await user
+        const userWithoutPassword = await user
             .findById(newUser._id)
             .select("-password");
 
         // console.log("Token is : ", token);
-        res.status(200).json({userWithoutpassword: userWithoutpassword , token });
+        res.status(201).json({userWithoutPassword: userWithoutPassword , token });
 
 
     } catch (err) {
@@ -45,7 +46,7 @@ router.post('/register' , async (req , res)=>{
 })
 
 
-router.post('/login' ,jwtAuthMiddleware, async (req, res)=>{
+router.post('/login', async (req, res)=>{
     try {
         const {email , password } = req.body;
         const foundUser = await user.findOne({email: email})
@@ -65,13 +66,20 @@ router.post('/login' ,jwtAuthMiddleware, async (req, res)=>{
         //generate token 
         const payload = {
             id: foundUser.id,
-            email: foundUser.email 
+            email: foundUser.email,
+            role: foundUser.role
         }
 
         const token = generateToken(payload);
 
-        res.json({token})
+        const userWithoutPassword = await user
+            .findById(foundUser._id)
+            .select("-password");
 
+        res.status(201).json({
+            user: userWithoutPassword,
+            token
+        });
         
 
     } catch (err) {

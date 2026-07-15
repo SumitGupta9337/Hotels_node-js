@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Menu = require("../models/Menu");
 const {jwtAuthMiddleware} = require('../middlewares/jwt')
-
+const checkRole = require("../middlewares/authRole");
 
 
 router.get('/' , async (req,res) =>{
@@ -38,7 +38,7 @@ router.get('/:id', async (req,res)=>{
     }
 })
 
-router.post('/' ,jwtAuthMiddleware, async (req,res) => {
+router.post('/' ,jwtAuthMiddleware,checkRole("manager"), async (req,res) => {
     try{
         const data = req.body
         const newItem = new Menu(data);
@@ -55,7 +55,7 @@ router.post('/' ,jwtAuthMiddleware, async (req,res) => {
 })
 
 
-router.put('/:id' ,jwtAuthMiddleware, async (req,res) => {
+router.put('/:id' ,jwtAuthMiddleware, checkRole("manager"), async (req,res) => {
     try{
         const MenuId = req.params.id; // extract id from url parameter 
         const updateMenuData = req.body; //extract updated data for the person
@@ -79,7 +79,7 @@ router.put('/:id' ,jwtAuthMiddleware, async (req,res) => {
 })
 
 
-router.delete('/:id' ,jwtAuthMiddleware, async (req , res) => {
+router.delete('/:id' ,jwtAuthMiddleware, checkRole("manager"), async (req , res) => {
     try {
 
         const MenuId = req.params.id;

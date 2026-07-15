@@ -54,7 +54,7 @@ router.post('/',jwtAuthMiddleware, async (req, res) => {
         }
 
         // Check customer exists
-        const customerExists = await user.findById(customer);
+        const customerExists = await user.findById(customer).select('-password');
 
         if (!customerExists) {
             return res.status(404).json({

@@ -3,6 +3,7 @@ const router = express.Router();
 const user = require('./../models/User');
 const table = require('./../models/Table');
 const {jwtAuthMiddleware} = require('../middlewares/jwt')
+const Order = require("../models/Order");   
 
 router.get('/', async (req,res)=>{
     try {
@@ -18,19 +19,35 @@ router.get('/', async (req,res)=>{
     }
 })
 
-router.get('/:id', async (req,res)=>{
+router.get('/:id/details', async (req,res)=>{
     try {
     
-
-        const data = await table.findById(req.params.id);
-
-        if(!data)
+        console.log("Requested ID:", req.params.id);
+        const tableData = await table.findById(req.params.id);
+        console.log("Table:", tableData);
+        if(!tableData)
         {
-           return res.status(401).json({error: "Table not found"})
+           return res.status(404).json({error: "Table not found"})
         }
 
+        const order = await Order.findOne({
+            table: req.params.id,
+            status: {
+                $ne: "served"
+            }
+                    
+        })
+        .populate("customer","-password")
+        .populate("waiter","-password")
+        .populate("items.menuItem", "name");
+        console.log(order);
+
         console.log('data fetched');
-        res.status(200).json(data)
+        res.status(200).json({
+            table: tableData,
+            currentOrder: order,
+            message: "No active order for this table."
+        });
 
         
     } catch (err) {

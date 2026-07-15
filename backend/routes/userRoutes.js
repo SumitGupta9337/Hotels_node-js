@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const user = require('./../models/User');
-const {jwtAuthMiddleware} = require('../middlewares/jwt')
+const {jwtAuthMiddleware} = require('../middlewares/jwt');
+const User = require('./../models/User');
 
 
 router.get('/',jwtAuthMiddleware, async (req,res)=>{
     try {
 
-        const data = await user.find().select("-password");
+        const data = await User.find().select("-password");
         console.log('data fetched');
         res.status(200).json(data)
 
@@ -22,7 +23,7 @@ router.get('/:id',jwtAuthMiddleware, async (req,res)=>{
     try {
     
 
-        const data = await user.findById(req.params.id).select("-password");
+        const data = await User.findById(req.params.id).select("-password");
 
         if(!data)
         {

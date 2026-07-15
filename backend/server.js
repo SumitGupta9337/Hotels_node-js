@@ -3,8 +3,9 @@ require('dotenv').config();
 const express = require('express')
 const app = express();
 const db = require('./config/db');
+const cors = require('cors')
 
-
+app.use(cors());
 
 app.use(express.json());
 
@@ -33,11 +34,11 @@ const authRoutes = require('./routes/authRoutes');
 const tableRoutes = require('./routes/tableRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
-app.use('/menu' , menuRoutes);
-app.use('/user' , userRoutes);
-app.use('/auth' , authRoutes);
-app.use('/table', tableRoutes)
-app.use('/orders', orderRoutes);
+app.use('/api/menu' , menuRoutes);
+app.use('/api/user' , userRoutes);
+app.use('/api/auth' , authRoutes);
+app.use('/api/table', tableRoutes)
+app.use('/api/orders', orderRoutes);
 
 
 
